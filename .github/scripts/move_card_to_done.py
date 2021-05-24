@@ -26,7 +26,7 @@ url_re = re.compile(regex_str)
 repo_apis = {}
 
 
-def _is_closed(note):
+def _is_open(note):
     results = url_re.search(note)
     owner, repo, _, number = results.groups()
 
@@ -35,7 +35,7 @@ def _is_closed(note):
     else:
         api = GhApi(owner=owner, repo=repo, token=token)
         repo_apis[owner, repo] = api
-    return api.issues.get(number).state == "closed"
+    return api.issues.get(number).state == "open"
 
 
 for project in projects:
@@ -60,6 +60,6 @@ for project in projects:
     for col_id in other_ids:
         cards = taskhub_api.projects.list_cards(col_id)
         for card in cards:
-            if not _is_closed(cards):
+            if _is_open(cards):
                 continue
             taskhub_api.projects.move_card(card.id, "top", done_id)
