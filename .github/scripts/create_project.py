@@ -1,8 +1,11 @@
 import argparse
-from ghapi.all import GhApi
-from ghapi.all import github_token
+import os
 
-repo_name = "thomasjpfan/taskhub"
+repo_name = os.getenv("GITHUB_REPOSITORY", "thomasjpfan/taskhub")
+
+from ghapi.all import GhApi  # noqa
+from ghapi.all import github_token  # noqa
+
 owner, repo = repo_name.split("/")
 
 parser = argparse.ArgumentParser(description="Create project")

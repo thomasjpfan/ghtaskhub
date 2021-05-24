@@ -2,12 +2,14 @@ import sys
 import re
 from collections import defaultdict
 import argparse
+import os
 
-from ghapi.all import GhApi
-from ghapi.all import github_token
+repo_name = os.getenv("GITHUB_REPOSITORY", "thomasjpfan/taskhub")
+
+from ghapi.all import GhApi  # noqa
+from ghapi.all import github_token  # noqa
 
 
-repo_name = "thomasjpfan/taskhub"
 owner, repo = repo_name.split("/")
 waiting_name = "Waiting for Response"
 actionable_name = "Actionable"
