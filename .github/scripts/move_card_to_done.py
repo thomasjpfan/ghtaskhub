@@ -61,6 +61,6 @@ for project in projects:
     for col_id in other_ids:
         cards = taskhub_api.projects.list_cards(col_id)
         for card in cards:
-            if _is_open(cards):
+            if _is_open(card):
                 continue
             taskhub_api.projects.move_card(card.id, "top", done_id)
