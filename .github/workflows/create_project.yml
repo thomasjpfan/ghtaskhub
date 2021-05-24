@@ -1,8 +1,10 @@
-name: sync
+name: create
 on:
-  schedule:
-    - cron: "30 */2 * * *"
   workflow_dispatch:
+    inputs:
+      repo:
+        description: "repo"
+        required: true
 
 jobs:
   sync:
@@ -15,6 +17,6 @@ jobs:
       - name: Install ghapi
         run: pip install -r requirements.txt
       - name: Sync
-        run: python .github/scripts/sync.py
+        run: python .github/scripts/create_project.py ${{ github.event.inputs.repo }}
         env:
           CONTEXT_GITHUB: ${{ toJson(github) }}

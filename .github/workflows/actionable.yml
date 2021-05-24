@@ -1,8 +1,13 @@
-name: sync
+name: actionable
 on:
-  schedule:
-    - cron: "30 */2 * * *"
   workflow_dispatch:
+    inputs:
+      repo:
+        description: "repo"
+        required: true
+      number:
+        description: "PR or issue number that is now actionable"
+        required: true
 
 jobs:
   sync:
@@ -15,6 +20,6 @@ jobs:
       - name: Install ghapi
         run: pip install -r requirements.txt
       - name: Sync
-        run: python .github/scripts/sync.py
+        run: python .github/scripts/actionable.py ${{ github.event.inputs.repo }} ${{ github.event.inputs.number }}
         env:
           CONTEXT_GITHUB: ${{ toJson(github) }}

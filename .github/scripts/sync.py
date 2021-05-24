@@ -8,22 +8,14 @@ from ghapi.all import github_token
 repo_name = "thomasjpfan/taskhub"
 done_name = "Done"
 
-repo_split = repo_name.split("/")
-if len(repo_split) != 2:
-    print("Repository name must be of the format OWNER/REPO")
-owner, repo = repo_split
+owner, repo = repo_name.split("/")
 
 taskhub_api = GhApi(owner=owner, repo=repo, token=github_token())
 
 projects = taskhub_api.projects.list_for_repo()
 
-repo_apis = {}
-
-
-regex_str = r"https://github\.com/(\w+)/(\w+)/(issues|pull)/(\d+)"
+regex_str = r"https://github\.com/([\w-]+)/([\w-]+)/(issues|pull)/(\d+)"
 url_re = re.compile(regex_str)
-
-repo_apis = {}
 
 
 def _get_info(card):
@@ -31,6 +23,9 @@ def _get_info(card):
     results = url_re.search(note)
     owner, repo, _, number = results.groups()
     return owner, repo, number, len(note)
+
+
+repo_apis = {}
 
 
 def _is_open(owner, repo, number):
