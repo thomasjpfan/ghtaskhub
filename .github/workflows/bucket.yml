@@ -17,8 +17,8 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: "3.9"
-      - name: Install ghapi
-        run: pip install -r requirements.txt
+      - name: Install PyGithub
+        run: pip install PyGithub
       - name: Ad to bucket
         run: python .github/scripts/add_bucket.py ${{ github.event.inputs.repo }} ${{ github.event.inputs.number }}
         env:
