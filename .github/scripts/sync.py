@@ -72,6 +72,7 @@ for number, id_infos in number_to_card_ids.items():
     if len(id_infos) <= 1:
         continue
 
+    print(f"Removing cards for {number} because of duplicates")
     sorted_info = sorted(id_infos)
     for _, card_id in sorted_info[:-1]:
         taskhub_api.projects.delete_card(card_id)

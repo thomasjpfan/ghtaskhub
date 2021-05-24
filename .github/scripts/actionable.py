@@ -66,4 +66,5 @@ for project in projects:
         _, _, number = _get_info(card)
         if int(number) == args.number:
             taskhub_api.projects.move_card(card.id, "top", action_id)
+            print(f"Moving issue {number} to be actionable")
             break
