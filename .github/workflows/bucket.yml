@@ -1,0 +1,25 @@
+name: bucket
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: "repo"
+        required: true
+      number:
+        description: "PR or issue number to bucket"
+        required: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install ghapi
+        run: pip install -r requirements.txt
+      - name: Ad to bucket
+        run: python .github/scripts/add_bucket.py ${{ github.event.inputs.repo }} ${{ github.event.inputs.number }}
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

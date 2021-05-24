@@ -2,7 +2,7 @@
 
 Automate all the tasks!
 
-## Usage
+## Usage on CI
 
 1. Move completed issues and pull requests into done. Note this is run on the CI every hour.
 
