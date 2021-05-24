@@ -12,8 +12,7 @@ if len(repo_split) != 2:
     print("Repository name must be of the format OWNER/REPO")
 owner, repo = repo_split
 
-token = environ["GPPR_GITHUB_API_TOKEN"]
-taskhub_api = GhApi(owner=owner, repo=repo, token=token)
+taskhub_api = GhApi(owner=owner, repo=repo)
 
 projects = taskhub_api.projects.list_for_repo()
 
@@ -33,7 +32,7 @@ def _is_open(note):
     if (owner, repo) in repo_apis:
         api = repo_apis[owner, repo]
     else:
-        api = GhApi(owner=owner, repo=repo, token=token)
+        api = GhApi(owner=owner, repo=repo)
         repo_apis[owner, repo] = api
     return api.issues.get(number).state == "open"
 
