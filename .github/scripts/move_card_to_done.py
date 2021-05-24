@@ -3,6 +3,7 @@ from os import environ
 import re
 
 from ghapi.all import GhApi
+from ghapi.all import github_token
 
 repo_name = "thomasjpfan/taskhub"
 done_name = "Done"
@@ -12,7 +13,7 @@ if len(repo_split) != 2:
     print("Repository name must be of the format OWNER/REPO")
 owner, repo = repo_split
 
-taskhub_api = GhApi(owner=owner, repo=repo)
+taskhub_api = GhApi(owner=owner, repo=repo, token=github_token())
 
 projects = taskhub_api.projects.list_for_repo()
 
@@ -32,7 +33,7 @@ def _is_open(note):
     if (owner, repo) in repo_apis:
         api = repo_apis[owner, repo]
     else:
-        api = GhApi(owner=owner, repo=repo)
+        api = GhApi(owner=owner, repo=repo, token=github_token())
         repo_apis[owner, repo] = api
     return api.issues.get(number).state == "open"
 
