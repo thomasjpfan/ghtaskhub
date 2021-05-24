@@ -38,6 +38,6 @@ else:  # no break
     print(f"Can not find column: {bucket_name}")
     sys.exit(1)
 
-note = f"https://github.com/{repo}/issues/{args.number}"
+note = f"https://github.com/{args.repo}/issues/{args.number}"
 target_column.create_card(note=note)
 print(f"Added {note} to column: {bucket_name}")
