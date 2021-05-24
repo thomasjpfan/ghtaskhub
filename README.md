@@ -16,11 +16,18 @@ gh workflow run -R thomasjpfan/taskhub sync
 gh workflow run -R thomasjpfan/taskhub actionable -f repo=numpy/numpy -f number=12345
 ```
 
-3. Create a project with the correct format
+3. Add task to bucket
+
+```python
+gh workflow run -R thomasjpfan/taskhub bucket -f repo=numpy/numpy -f number=12345
+```
+
+4. Create a project with the correct format
 
 ```python
 gh workflow run -R thomasjpfan/taskhub create -f repo=numpy/numpy
 ```
+
 
 
 ## License

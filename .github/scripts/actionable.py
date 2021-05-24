@@ -68,3 +68,5 @@ for project in projects:
             taskhub_api.projects.move_card(card.id, "top", action_id)
             print(f"Moving issue {number} to be actionable")
             break
+    else:  # no break
+        print(f"Issue {number} was not found")
