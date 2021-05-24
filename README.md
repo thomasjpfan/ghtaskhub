@@ -28,8 +28,6 @@ gh workflow run -R thomasjpfan/taskhub bucket -f repo=numpy/numpy -f number=1234
 gh workflow run -R thomasjpfan/taskhub create -f repo=numpy/numpy
 ```
 
-
-
 ## License
 
 This repo is under the [MIT License](LICENSE).
