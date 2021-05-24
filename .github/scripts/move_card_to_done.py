@@ -26,7 +26,8 @@ url_re = re.compile(regex_str)
 repo_apis = {}
 
 
-def _is_open(note):
+def _is_open(card):
+    note = card.note
     results = url_re.search(note)
     owner, repo, _, number = results.groups()
 
