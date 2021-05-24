@@ -1,4 +1,4 @@
-name: Move cards to done
+name: Sync cards
 on:
   schedule:
     - cron: "30 */1 * * *"

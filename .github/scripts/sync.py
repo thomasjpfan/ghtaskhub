@@ -1,6 +1,6 @@
 import sys
-from os import environ
 import re
+from collections import defaultdict
 
 from ghapi.all import GhApi
 from ghapi.all import github_token
@@ -26,11 +26,14 @@ url_re = re.compile(regex_str)
 repo_apis = {}
 
 
-def _is_open(card):
+def _get_info(card):
     note = card.note
     results = url_re.search(note)
     owner, repo, _, number = results.groups()
+    return owner, repo, number, len(note)
 
+
+def _is_open(owner, repo, number):
     if (owner, repo) in repo_apis:
         api = repo_apis[owner, repo]
     else:
@@ -39,6 +42,7 @@ def _is_open(card):
     return api.issues.get(number).state == "open"
 
 
+number_to_card_ids = defaultdict(list)
 for project in projects:
     columns = taskhub_api.projects.list_columns(project.id)
     done_id = None
@@ -57,10 +61,19 @@ for project in projects:
         print(f"There are no other columns in {project.name}")
         sys.exit(1)
 
-    # Check cards if it is "done"
     for col_id in other_ids:
         cards = taskhub_api.projects.list_cards(col_id)
         for card in cards:
-            if _is_open(card):
+            owner, repo, number, note_size = _get_info(card)
+            if _is_open(owner, repo, number):
                 continue
             taskhub_api.projects.move_card(card.id, "top", done_id)
+            number_to_card_ids[number].append((note_size, card.id))
+
+for number, id_infos in number_to_card_ids:
+    if len(id_infos) <= 1:
+        continue
+
+    sorted_info = sorted(id_infos)
+    for _, card_id in sorted_info[:-1]:
+        taskhub_api.projects.delete_card(card_id)
