@@ -65,10 +65,11 @@ for project in projects:
         cards = taskhub_api.projects.list_cards(col_id)
         for card in cards:
             owner, repo, number, note_size = _get_info(card)
+            number_to_card_ids[number].append((note_size, card.id))
+
             if _is_open(owner, repo, number):
                 continue
             taskhub_api.projects.move_card(card.id, "top", done_id)
-            number_to_card_ids[number].append((note_size, card.id))
 
 for number, id_infos in number_to_card_ids:
     if len(id_infos) <= 1:
