@@ -71,7 +71,7 @@ for project in projects:
                 continue
             taskhub_api.projects.move_card(card.id, "top", done_id)
 
-for number, id_infos in number_to_card_ids:
+for number, id_infos in number_to_card_ids.items():
     if len(id_infos) <= 1:
         continue
 
