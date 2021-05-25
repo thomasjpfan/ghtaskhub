@@ -39,7 +39,7 @@ def move(
             sys.exit(1)
 
         if to_id is None:
-            print(f"There are not a waiting columns in {project.name}")
+            print(f"There are not a {to_column} column in {project.name}")
             sys.exit(1)
 
         from_cards = taskhub_api.projects.list_cards(from_id)
