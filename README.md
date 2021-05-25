@@ -2,30 +2,51 @@
 
 Automate all the tasks!
 
-## Usage on CI
+## Install
 
-1. Move completed issues and pull requests into done. Note this is run on the CI every hour.
+1. Install ghtaskhub. (I recommend using [pipx](https://pipxproject.github.io/pipx/))
 
 ```python
-gh workflow run -R thomasjpfan/taskhub sync
+pip install git+http://github.com/thomasjpfan/taskhub
 ```
 
-2. Move a "Needs Response" card to actionable:
+2. Place your GitHub token and taskhub repo in your env:
 
-```python
-gh workflow run -R thomasjpfan/taskhub actionable -f repo=numpy/numpy -f number=12345
+```bash
+export GITHUB_TOKEN=xxxxx
+export TASKHUB_REPO=thomasjpfan/taskhub
 ```
 
-3. Add task to bucket
+## Usage
 
-```python
-gh workflow run -R thomasjpfan/taskhub bucket -f repo=numpy/numpy -f number=12345
+- Move completed issues and pull requests into done. Note this is run on the CI every hour.
+
+```bash
+ghtaskhub all sync
 ```
 
-4. Create a project with the correct format
+- Move a "Waiting for Response" card to Actionable:
 
-```python
-gh workflow run -R thomasjpfan/taskhub create -f repo=numpy/numpy
+```bash
+ghtaskhub pytorch/pytorch actionable 44459
+```
+
+- Move a "Actionable" card  to "Waiting for Response"
+
+```bash
+ghtaskhub pytorch/pytorch response 44459
+```
+
+- Add task to bucket:
+
+```bash
+ghtaskhub pytorch/pytorch bucket 44459
+```
+
+- Create a project with the correct format
+
+```bash
+ghtaskhub pytorch/pytorch sync
 ```
 
 ## License
