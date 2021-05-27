@@ -1,8 +1,9 @@
 import sys
-import re
 from collections import defaultdict
 
 from ghapi.all import GhApi
+
+from ._utils import _get_info
 
 
 def sync(github_token, taskhub_repo, project_repo):
@@ -12,15 +13,6 @@ def sync(github_token, taskhub_repo, project_repo):
     taskhub_api = GhApi(owner=owner, repo=repo, token=github_token)
 
     projects = taskhub_api.projects.list_for_repo()
-
-    regex_str = r"https://github\.com/([\w-]+)/([\w-]+)/(issues|pull)/(\d+)"
-    url_re = re.compile(regex_str)
-
-    def _get_info(card):
-        note = card.note
-        results = url_re.search(note)
-        owner, repo, _, number = results.groups()
-        return owner, repo, number, len(note)
 
     repo_apis = {}
 
@@ -59,7 +51,7 @@ def sync(github_token, taskhub_repo, project_repo):
         for col_id in other_ids:
             cards = taskhub_api.projects.list_cards(col_id)
             for card in cards:
-                owner, repo, number, note_size = _get_info(card)
+                owner, repo, number, note_size = _get_info(card.note)
                 number_to_card_ids[number].append((note_size, card.id))
 
                 if _is_open(owner, repo, number):
