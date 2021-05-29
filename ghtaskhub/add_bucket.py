@@ -35,7 +35,7 @@ def add_bucket(github_token, taskhub_repo, project_repo, project_number):
     cards = target_column.get_cards()
     for card in cards:
         _, _, card_number, _ = _get_info(card.note)
-        if card_number == project_number:
+        if int(card_number) == int(project_number):
             print(f"Issue/PR #{project_number} is already in {bucket_name}")
             sys.exit(0)
 

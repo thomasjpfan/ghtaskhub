@@ -1,0 +1,15 @@
+README.md
+setup.cfg
+setup.py
+ghtaskhub/__init__.py
+ghtaskhub/_utils.py
+ghtaskhub/add_bucket.py
+ghtaskhub/create_project.py
+ghtaskhub/move.py
+ghtaskhub/sync.py
+ghtaskhub.egg-info/PKG-INFO
+ghtaskhub.egg-info/SOURCES.txt
+ghtaskhub.egg-info/dependency_links.txt
+ghtaskhub.egg-info/entry_points.txt
+ghtaskhub.egg-info/requires.txt
+ghtaskhub.egg-info/top_level.txt
