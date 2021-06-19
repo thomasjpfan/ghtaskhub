@@ -37,8 +37,8 @@ def move(github_token, taskhub_repo, project_repo, project_number, to_column):
             from_column = column.name
             from_cards = taskhub_api.projects.list_cards(from_id)
             for card in from_cards:
-                _, _, number = _get_info(card.note)
-                if int(number) != project_number:
+                _, _, number, _ = _get_info(card.note)
+                if int(number) == project_number:
                     taskhub_api.projects.move_card(card.id, "top", to_id)
                     print(
                         f"Moved issue {project_number} from {from_column} to"
@@ -48,7 +48,5 @@ def move(github_token, taskhub_repo, project_repo, project_number, to_column):
                     break
 
         if not moved:
-            print(
-                f"{project_number} was not found, please add it to the bucket list"
-                " first"
-            )
+            other_names = ", ".join([column.name for column in other_columns])
+            print(f"{project_number} was not found in [{other_names}]")
