@@ -38,7 +38,6 @@ def main():
     )
     actionable_partial = partial(
         move,
-        from_column="Waiting for Response",
         to_column="Actionable",
     )
     actionable_parser.set_defaults(func=actionable_partial)
@@ -54,7 +53,6 @@ def main():
     )
     response_partial = partial(
         move,
-        from_column="Actionable",
         to_column="Waiting for Response",
     )
     response_parser.set_defaults(func=response_partial)
