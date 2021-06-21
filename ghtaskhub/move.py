@@ -2,14 +2,16 @@ import sys
 from ghapi.all import GhApi
 
 from ._utils import _get_info
+from .add import add
 
 
-def move(github_token, taskhub_repo, project_repo, project_number, to_column):
+def move(github_token, taskhub_repo, project_repo, project_number, to_column_enum):
     owner, repo = taskhub_repo.split("/")
 
     taskhub_api = GhApi(owner=owner, repo=repo, token=github_token)
 
     projects = taskhub_api.projects.list_for_repo()
+    to_column = to_column_enum.value
 
     for project in projects:
         if project.name != project_repo:
@@ -28,11 +30,7 @@ def move(github_token, taskhub_repo, project_repo, project_number, to_column):
             print(f"There are not a {to_column} column in {project.name}")
             sys.exit(1)
 
-        moved = False
         for column in other_columns:
-            if moved:
-                break
-
             from_id = column.id
             from_column = column.name
             from_cards = taskhub_api.projects.list_cards(from_id)
@@ -44,9 +42,9 @@ def move(github_token, taskhub_repo, project_repo, project_number, to_column):
                         f"Moved issue {project_number} from {from_column} to"
                         f" {to_column}"
                     )
-                    moved = True
-                    break
+                    return
 
-        if not moved:
-            other_names = ", ".join([column.name for column in other_columns])
-            print(f"{project_number} was not found in [{other_names}]")
+        other_names = ", ".join([column.name for column in other_columns])
+        print(f"{project_number} was not found in [{other_names}]")
+        print(f"Creating {project_number} and adding it to {to_column}")
+        add(github_token, taskhub_repo, project_repo, project_number, to_column)

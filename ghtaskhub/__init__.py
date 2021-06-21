@@ -4,9 +4,10 @@ import argparse
 import sys
 
 from .move import move
-from .add_bucket import add_bucket
+from .add import add
 from .create_project import create_project
 from .sync import sync
+from .columns import Column
 
 
 def main():
@@ -27,36 +28,6 @@ def main():
     )
     subparser = parser.add_subparsers()
 
-    actionable_parser = subparser.add_parser(
-        "actionable",
-        help="Waiting for response is now actionable",
-    )
-    actionable_parser.add_argument(
-        "project_number",
-        type=int,
-        help="issue number to make actionable",
-    )
-    actionable_partial = partial(
-        move,
-        to_column="Actionable",
-    )
-    actionable_parser.set_defaults(func=actionable_partial)
-
-    response_parser = subparser.add_parser(
-        "response",
-        help="Actionable is now needs response",
-    )
-    response_parser.add_argument(
-        "project_number",
-        type=int,
-        help="issue number to waiting for response",
-    )
-    response_partial = partial(
-        move,
-        to_column="Waiting for Response",
-    )
-    response_parser.set_defaults(func=response_partial)
-
     bucket_parser = subparser.add_parser(
         "bucket",
         help="Add issue to bucket",
@@ -64,9 +35,26 @@ def main():
     bucket_parser.add_argument(
         "project_number",
         type=int,
-        help="issue number to make actionable",
+        help="issue number to bucket",
     )
+    add_bucket = partial(add, to_column=Column.BUCKET)
     bucket_parser.set_defaults(func=add_bucket)
+
+    move_columns = [
+        ("actionable", "Waiting for response is now actionable", Column.ACTIONABLE),
+        (
+            "response",
+            "Move or add to waiting for response",
+            Column.WAITING_FOR_RESPONSE,
+        ),
+        ("to_review", "Move or add to review", Column.TO_REVIEW),
+    ]
+
+    for option, help_str, to_column in move_columns:
+        option_parser = subparser.add_parser(option, help=help_str)
+        option_parser.add_argument("project_number", type=int, help="issue number")
+        option_partial = partial(move, to_column=to_column)
+        option_parser.set_defaults(func=option_partial)
 
     create_project_parser = subparser.add_parser(
         "create-project",
@@ -86,7 +74,7 @@ def main():
     args = parser.parse_args()
 
     if args.github_token is None:
-        print("GITHUB_TOKEN or --github_token must be set")
+        print("GITHUB_TOKEN or --github-token must be set")
         sys.exit(1)
 
     if args.taskhub_repo is None:

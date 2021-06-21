@@ -1,5 +1,7 @@
 from ghapi.all import GhApi  # noqa
 
+from .columns import Column
+
 
 def create_project(github_token, taskhub_repo, project_repo):
     owner, repo = taskhub_repo.split("/")
@@ -19,9 +21,7 @@ def create_project(github_token, taskhub_repo, project_repo):
         project_id = project.id
         print(f"Added project: {project_repo}")
 
-    columns = set(
-        ["Bucket List", "Actionable", "Waiting for Response", "To Review", "Done"]
-    )
+    columns = set([col.value for col in Column])
     current_columns = set(
         col.name for col in taskhub_api.projects.list_columns(project_id)
     )

@@ -4,10 +4,10 @@ from collections import defaultdict
 from ghapi.all import GhApi
 
 from ._utils import _get_info
+from .columns import Column
 
 
 def sync(github_token, taskhub_repo, project_repo):
-    done_name = "Done"
 
     owner, repo = taskhub_repo.split("/")
     taskhub_api = GhApi(owner=owner, repo=repo, token=github_token)
@@ -35,7 +35,7 @@ def sync(github_token, taskhub_repo, project_repo):
         done_id = None
         other_ids = []
         for column in columns:
-            if column.name == done_name:
+            if column.name == Column.DONE.value:
                 done_id = column.id
             else:
                 other_ids.append(column.id)
