@@ -3,6 +3,7 @@ from ghapi.all import GhApi
 
 from ._utils import _get_info
 from .add import add
+from .columns import Column
 
 
 def move(github_token, taskhub_repo, project_repo, project_number, to_column_enum):
@@ -23,7 +24,7 @@ def move(github_token, taskhub_repo, project_repo, project_number, to_column_enu
         for column in columns:
             if column.name == to_column:
                 to_id = column.id
-            elif column.name != "Done":
+            elif column.name != Column.DONE.value:
                 other_columns.append(column)
 
         if to_id is None:
