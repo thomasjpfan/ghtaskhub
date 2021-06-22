@@ -38,7 +38,7 @@ def main():
         type=int,
         help="issue number to bucket",
     )
-    add_bucket = partial(add, to_column=Column.BUCKET)
+    add_bucket = partial(add, to_column_enum=Column.BUCKET)
     bucket_parser.set_defaults(func=add_bucket)
 
     move_columns = [
@@ -54,7 +54,7 @@ def main():
     for option, help_str, to_column in move_columns:
         option_parser = subparser.add_parser(option, help=help_str)
         option_parser.add_argument("project_number", type=int, help="issue number")
-        option_partial = partial(move, to_column=to_column)
+        option_partial = partial(move, to_column_enum=to_column)
         option_parser.set_defaults(func=option_partial)
 
     create_project_parser = subparser.add_parser(

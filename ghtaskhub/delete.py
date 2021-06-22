@@ -26,6 +26,7 @@ def delete(github_token, taskhub_repo, project_repo, project_number):
         for card in cards:
             _, _, card_number, _ = _get_info(card.note)
             if int(card_number) == int(project_number):
+                card.delete()
                 print(f"Deleting Issue/PR #{project_number} from {column.name}")
                 sys.exit(0)
 

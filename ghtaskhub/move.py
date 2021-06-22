@@ -48,4 +48,4 @@ def move(github_token, taskhub_repo, project_repo, project_number, to_column_enu
         other_names = ", ".join([column.name for column in other_columns])
         print(f"{project_number} was not found in [{other_names}]")
         print(f"Creating {project_number} and adding it to {to_column}")
-        add(github_token, taskhub_repo, project_repo, project_number, to_column)
+        add(github_token, taskhub_repo, project_repo, project_number, to_column_enum)
