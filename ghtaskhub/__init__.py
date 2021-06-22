@@ -8,6 +8,7 @@ from .add import add
 from .create_project import create_project
 from .sync import sync
 from .columns import Column
+from .delete import delete
 
 
 def main():
@@ -70,6 +71,12 @@ def main():
         ),
     )
     sync_parser.set_defaults(func=sync)
+
+    delete_card_parser = subparser.add_parser("delete", help="Delete card")
+    delete_card_parser.add_argument(
+        "project_number", type=int, help="issue number to delete"
+    )
+    delete_card_parser.set_defaults(func=delete)
 
     args = parser.parse_args()
 
