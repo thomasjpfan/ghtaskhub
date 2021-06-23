@@ -4,7 +4,6 @@ import argparse
 import sys
 
 from .move import move
-from .add import add
 from .create_project import create_project
 from .sync import sync
 from .columns import Column
@@ -29,20 +28,9 @@ def main():
     )
     subparser = parser.add_subparsers()
 
-    bucket_parser = subparser.add_parser(
-        "bucket",
-        help="Add issue to bucket",
-    )
-    bucket_parser.add_argument(
-        "project_number",
-        type=int,
-        help="issue number to bucket",
-    )
-    add_bucket = partial(add, to_column_enum=Column.BUCKET)
-    bucket_parser.set_defaults(func=add_bucket)
-
     move_columns = [
-        ("actionable", "Waiting for response is now actionable", Column.ACTIONABLE),
+        ("bucket", "Move or add to bucket", Column.BUCKET),
+        ("actionable", "Move or add to actionable", Column.ACTIONABLE),
         (
             "response",
             "Move or add to waiting for response",
