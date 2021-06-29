@@ -27,10 +27,6 @@ def sync(github_token, taskhub_repo, project_repo):
             repo_apis[owner, repo] = api
         return api
 
-    def _is_open(owner, repo, number):
-        api = _get_repo_api(owner, repo)
-        return api.issues.get(number).state == "open"
-
     number_to_card_ids = defaultdict(list)
 
     if project_repo == "all":
@@ -61,13 +57,26 @@ def sync(github_token, taskhub_repo, project_repo):
             cards = taskhub_api.projects.list_cards(col_id)
             for card in cards:
                 owner, repo, number, note_size = _get_info(card.note)
+                repo_api = _get_repo_api(owner, repo)
+                issue_info = repo_api.issues.get(number)
+
                 number_to_card_ids[number].append((note_size, card.id))
 
-                if not _is_open(owner, repo, number):
+                if not issue_info.state == "open":
                     _move_card(taskhub_api, card, column_enum_to_ids[Column.DONE])
                 elif column_enum_to_ids[Column.WAITING_FOR_RESPONSE] == col_id:
-                    repo_api = _get_repo_api(owner, repo)
                     _move_waiting(
+                        taskhub_api,
+                        repo_api,
+                        card,
+                        column_enum_to_ids,
+                        number,
+                        owner,
+                        issue_info,
+                    )
+                elif column_enum_to_ids[Column.BUCKET] == col_id:
+                    # _move requested review by to to "To Review"
+                    _move_to_review(
                         taskhub_api, repo_api, card, column_enum_to_ids, number, owner
                     )
 
@@ -81,7 +90,12 @@ def sync(github_token, taskhub_repo, project_repo):
             taskhub_api.projects.delete_card(card_id)
 
 
-def _move_waiting(taskhub_api, repo_api, card, column_enum_to_ids, number, owner):
+def _move_waiting(
+    taskhub_api, repo_api, card, column_enum_to_ids, number, owner, issue_info
+):
+    if not hasattr(issue_info, "pul_request"):
+        return
+
     card_date_match = re.search("Added: (.+)", card.note)
     if card_date_match is None:
         return
@@ -90,10 +104,6 @@ def _move_waiting(taskhub_api, repo_api, card, column_enum_to_ids, number, owner
     try:
         card_added_dt = datetime.datetime.fromisoformat(card_date_str)
     except ValueError:
-        return
-
-    info = repo_api.issues.get(number)
-    if not hasattr(info, "pul_request"):
         return
 
     pr = repo_api.pulls.get(number)
@@ -115,6 +125,8 @@ def _move_waiting(taskhub_api, repo_api, card, column_enum_to_ids, number, owner
 
         if review_dt > card_added_dt:
             _move_card(taskhub_api, card, column_enum_to_ids[Column.ACTIONABLE])
+            print(f"Moved issue {number} from Waiting for Response to Actionable")
+
     else:
         # Not my PR & updated by contributor -> Move to "To Review"
         updated_at = pr.head.repo.updated_at
@@ -128,3 +140,21 @@ def _move_waiting(taskhub_api, repo_api, card, column_enum_to_ids, number, owner
 
         if updated_dt > card_added_dt:
             _move_card(taskhub_api, card, column_enum_to_ids[Column.TO_REVIEW])
+            print(f"Moved issue {number} from Waiting for Response to To Review")
+
+
+def _move_to_review(
+    taskhub_api, repo_api, card, column_enum_to_ids, number, owner, issue_info
+):
+    # move requested review from "Bucket" to "To Review"
+    if not hasattr(issue_info, "pul_request"):
+        return
+
+    pr = repo_api.pulls.get(number)
+
+    requested_reviews = pr.requested_reviewers
+
+    for reviewer in requested_reviews:
+        if reviewer.login == owner:
+            _move_card(taskhub_api, card, column_enum_to_ids[Column.TO_REVIEW])
+            print(f"Moved issue {number} from Bucket to To Review")
