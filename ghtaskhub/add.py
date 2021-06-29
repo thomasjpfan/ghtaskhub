@@ -1,3 +1,4 @@
+import datetime
 import sys
 
 from github import Github
@@ -38,6 +39,23 @@ def add(github_token, taskhub_repo, project_repo, project_number, to_column_enum
             print(f"Issue/PR #{project_number} is already in {to_column}")
             sys.exit(0)
 
-    note = f"https://github.com/{project_repo}/issues/{project_number}"
-    target_column.create_card(note=note)
-    print(f"Added {note} to column: {to_column}")
+    url = f"https://github.com/{project_repo}/issues/{project_number}"
+    target_column.create_card(note=_add_date_to_note(url))
+    print(f"Added {project_repo}#{project_number} to column: {to_column}")
+
+
+def _add_date_to_note(original_note):
+    lines_split = original_note.split("\n")
+
+    added_line = None
+    for i, line in enumerate(lines_split):
+        if line.startswith("Added: "):
+            added_line = i
+            break
+
+    str_time = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    if added_line is None:
+        return f"{original_note}\n\nAdded: {str_time}"
+
+    lines_split[added_line] = f"Added: {str_time}"
+    return "\n".join(lines_split)

@@ -5,6 +5,7 @@ from ghapi.all import GhApi
 
 from ._utils import _get_info
 from .columns import Column
+from .move import _move_card
 
 
 def sync(github_token, taskhub_repo, project_repo):
@@ -16,12 +17,16 @@ def sync(github_token, taskhub_repo, project_repo):
 
     repo_apis = {}
 
-    def _is_open(owner, repo, number):
+    def _get_repo_api(owner, repo):
         if (owner, repo) in repo_apis:
             api = repo_apis[owner, repo]
         else:
             api = GhApi(owner=owner, repo=repo, token=github_token)
             repo_apis[owner, repo] = api
+        return api
+
+    def _is_open(owner, repo, number):
+        api = _get_repo_api(owner, repo)
         return api.issues.get(number).state == "open"
 
     number_to_card_ids = defaultdict(list)
@@ -56,7 +61,7 @@ def sync(github_token, taskhub_repo, project_repo):
 
                 if _is_open(owner, repo, number):
                     continue
-                taskhub_api.projects.move_card(card.id, "top", done_id)
+                _move_card(taskhub_api, card, done_id)
 
     for number, id_infos in number_to_card_ids.items():
         if len(id_infos) <= 1:

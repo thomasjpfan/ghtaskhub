@@ -3,6 +3,7 @@ from ghapi.all import GhApi
 
 from ._utils import _get_info
 from .add import add
+from .add import _add_date_to_note
 from .columns import Column
 
 
@@ -38,7 +39,7 @@ def move(github_token, taskhub_repo, project_repo, project_number, to_column_enu
             for card in from_cards:
                 _, _, number, _ = _get_info(card.note)
                 if int(number) == project_number:
-                    taskhub_api.projects.move_card(card.id, "top", to_id)
+                    _move_card(taskhub_api, card.id, to_id)
                     print(
                         f"Moved issue {project_number} from {from_column} to"
                         f" {to_column}"
@@ -49,3 +50,9 @@ def move(github_token, taskhub_repo, project_repo, project_number, to_column_enu
         print(f"{project_number} was not found in [{other_names}]")
         print(f"Creating {project_number} and adding it to {to_column}")
         add(github_token, taskhub_repo, project_repo, project_number, to_column_enum)
+
+
+def _move_card(taskhub_api, card, to_id):
+    taskhub_api.projects.move_card(card.id, "top", to_id)
+    new_note = _add_date_to_note(card.note)
+    taskhub_api.projects.update_card(card.id, new_note)
