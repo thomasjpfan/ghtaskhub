@@ -49,7 +49,7 @@ def sync(github_token, taskhub_repo, project_repo):
             column_name_to_enum[column.name]: column.id for column in columns
         }
         other_ids = [
-            col_id for enum, col_id in column_enum_to_ids if enum != Column.DONE
+            col_id for enum, col_id in column_enum_to_ids.items() if enum != Column.DONE
         ]
 
         # move cards to done if they were closed.
@@ -77,7 +77,13 @@ def sync(github_token, taskhub_repo, project_repo):
                 elif column_enum_to_ids[Column.BUCKET] == col_id:
                     # _move requested review by to to "To Review"
                     _move_to_review(
-                        taskhub_api, repo_api, card, column_enum_to_ids, number, owner
+                        taskhub_api,
+                        repo_api,
+                        card,
+                        column_enum_to_ids,
+                        number,
+                        owner,
+                        issue_info,
                     )
 
     for number, id_infos in number_to_card_ids.items():
